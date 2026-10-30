@@ -14,81 +14,156 @@
   <!-- TOPO -->
   <header class="topo">
     <h1>Para Lais Santos Futamata</h1>
-    <p class="frase">Cada momento ao seu lado vira uma lembrança que eu quero guardar.</p>
+    <p class="frase" id="frase"></p>
+    <p class="seta">role para baixo ↓</p>
   </header>
+
+  <!-- CONTADOR -->
+  <section class="contador reveal">
+    <h2>Desde o dia que nos conhecemos</h2>
+    <div class="relogio">
+      <div><span id="c-dias">0</span><small>dias</small></div>
+      <div><span id="c-horas">0</span><small>horas</small></div>
+      <div><span id="c-min">0</span><small>min</small></div>
+      <div><span id="c-seg">0</span><small>seg</small></div>
+    </div>
+  </section>
 
   <!-- GALERIA -->
   <section id="galeria" class="galeria">
     <h2>Nossas fotos</h2>
+    <p class="dica">Toque nas fotos para ver a lembrança</p>
     <div class="grade">
 
-      <!-- Para trocar a foto: coloque o arquivo na pasta "fotos" e ajuste o nome em src -->
-      <figure class="horizontal">
+      <!-- data-texto: escreva a lembrança de cada foto -->
+      <figure class="horizontal reveal" data-texto="Escreva aqui como foi o dia em que nos conhecemos.">
         <img src="fotos/foto1.jpg" alt="O dia que nos conhecemos" onerror="this.style.display='none'">
-        <figcaption>Dia que nos conhecemos</figcaption>
+        <figcaption>O dia que nos conhecemos</figcaption>
       </figure>
 
-      <figure>
+      <figure class="reveal" data-texto="Escreva aqui como foi o nosso primeiro encontro.">
         <img src="fotos/foto2.jpg" alt="Nosso primeiro encontro" onerror="this.style.display='none'">
-        <figcaption>Primeiro encontro</figcaption>
+        <figcaption>Nosso primeiro encontro</figcaption>
       </figure>
 
-      <figure>
+      <figure class="reveal" data-texto="Escreva aqui como foi a nossa noite no cinema.">
         <img src="fotos/foto3.jpg" alt="Noite no cinema" onerror="this.style.display='none'">
         <figcaption>Noite no cinema</figcaption>
       </figure>
 
-      <figure>
+      <figure class="reveal" data-texto="Escreva aqui como foi o nosso dia no parque.">
         <img src="fotos/foto4.jpg" alt="Dia no parque" onerror="this.style.display='none'">
-        <figcaption>Noite no parque</figcaption>
+        <figcaption>Dia no parque</figcaption>
       </figure>
 
     </div>
   </section>
 
+  <!-- SURPRESA -->
+  <section class="surpresa reveal">
+    <h2>Tenho uma coisa para você</h2>
+    <button id="btnSurpresa" type="button">Clique aqui 💌</button>
+    <p id="msgSurpresa" class="msg-surpresa">Por mais momentos como esses, adoro vc ❤️❤️</p>
+  </section>
+
   <!-- RODAPÉ -->
   <footer class="rodape">
-    <p>Feito com carinho para Lais Santos</p>
+    <p>Feito com carinho para Lais Santos Futamata ♥</p>
   </footer>
+
+  <!-- FOTO AMPLIADA -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <div class="caixa">
+      <button id="fechar" class="fechar" type="button" aria-label="Fechar">×</button>
+      <img id="lb-img" alt="">
+      <h3 id="lb-titulo"></h3>
+      <p id="lb-texto"></p>
+    </div>
+  </div>
 
   <!-- MÚSICA: coloque o arquivo na pasta "musica" com o nome feminina.mp3 -->
   <audio id="musica" src="musica/feminina.mp3" loop></audio>
 
   <script>
-    var INICIO = 65;   /* 1:05 */
-    var FIM = 110;     /* 1:50 */
+    /* ====== CONFIGURE AQUI ====== */
+    var FRASE = "Cada momento ao seu lado vira uma lembrança que eu quero guardar.";
+    var DATA_INICIAL = new Date("2026-09-12T00:00:00"); /* dia em que nos conhecemos */
+    var INICIO = 65;   /* música: começa em 1:05 */
+    var FIM = 110;     /* música: termina em 1:50 */
 
-    var audio = document.getElementById("musica");
-
-    function tocar() {
-      if (audio.currentTime < INICIO || audio.currentTime >= FIM) {
-        audio.currentTime = INICIO;
+    /* ====== FRASE DIGITANDO ====== */
+    var fraseEl = document.getElementById("frase");
+    var i = 0;
+    function digitar() {
+      if (i <= FRASE.length) {
+        fraseEl.textContent = FRASE.slice(0, i);
+        i++;
+        setTimeout(digitar, 45);
       }
-      var p = audio.play();
-      if (p) {
-        p.then(removerGatilhos).catch(function () {
-          /* O navegador bloqueou: toca no primeiro toque na tela */
+    }
+    digitar();
+
+    /* ====== CONTADOR ====== */
+    function atualizar() {
+      var s = Math.max(0, Math.floor((new Date() - DATA_INICIAL) / 1000));
+      document.getElementById("c-dias").textContent = Math.floor(s / 86400);
+      document.getElementById("c-horas").textContent = Math.floor((s % 86400) / 3600);
+      document.getElementById("c-min").textContent = Math.floor((s % 3600) / 60);
+      document.getElementById("c-seg").textContent = s % 60;
+    }
+    atualizar();
+    setInterval(atualizar, 1000);
+
+    /* ====== APARECER AO ROLAR ====== */
+    var itens = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window) {
+      var obs = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("visivel");
+            obs.unobserve(e.target);
+          }
         });
-      }
+      }, { threshold: 0.15 });
+      itens.forEach(function (el) { obs.observe(el); });
+    } else {
+      itens.forEach(function (el) { el.classList.add("visivel"); });
     }
-    function removerGatilhos() {
-      ["pointerdown", "keydown"].forEach(function (ev) {
-        document.removeEventListener(ev, tocar);
+
+    /* ====== FOTO AMPLIADA ====== */
+    var lb = document.getElementById("lightbox");
+    document.querySelectorAll("figure").forEach(function (fig) {
+      fig.addEventListener("click", function () {
+        var img = fig.querySelector("img");
+        var legenda = fig.querySelector("figcaption").textContent;
+        document.getElementById("lb-img").src = img.getAttribute("src");
+        document.getElementById("lb-img").alt = legenda;
+        document.getElementById("lb-titulo").textContent = legenda;
+        document.getElementById("lb-texto").textContent = fig.dataset.texto || "";
+        lb.classList.add("aberto");
+        lb.setAttribute("aria-hidden", "false");
       });
+    });
+    function fecharLb() {
+      lb.classList.remove("aberto");
+      lb.setAttribute("aria-hidden", "true");
     }
+    document.getElementById("fechar").addEventListener("click", fecharLb);
+    lb.addEventListener("click", function (e) { if (e.target === lb) fecharLb(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") fecharLb(); });
 
-    /* Quando chega no fim do trecho, volta para o início (repete o refrão) */
-    audio.addEventListener("timeupdate", function () {
-      if (audio.currentTime >= FIM) {
-        audio.currentTime = INICIO;
-      }
-    });
-
-    tocar();
-    ["pointerdown", "keydown"].forEach(function (ev) {
-      document.addEventListener(ev, tocar);
-    });
-  </script>
-
-</body>
-</html>
+    /* ====== SURPRESA COM CORAÇÕES ====== */
+    function chuvaDeCoracoes() {
+      for (var n = 0; n < 24; n++) {
+        (function (n) {
+          setTimeout(function () {
+            var c = document.createElement("span");
+            c.className = "coracao";
+            c.textContent = ["❤️", "💕", "💖"][n % 3];
+            c.style.left = Math.random() * 100 + "vw";
+            c.style.fontSize = 18 + Math.random() * 22 + "px";
+            c.style.animationDuration = 3 + Math.random() * 2 + "s";
+            document.body.appendChild(c);
+            setTimeout(function () { c.remove(); }, 5500);
+          }, n * 120);
+        })(n);
