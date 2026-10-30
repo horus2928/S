@@ -13,14 +13,26 @@ body {
   color: var(--texto);
   font-family: "Playfair Display", Georgia, "Times New Roman", serif;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 h1, h2 { font-weight: normal; }
 
+/* Efeito de aparecer ao rolar */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visivel {
+  opacity: 1;
+  transform: none;
+}
+
 /* TOPO */
 .topo {
   text-align: center;
-  padding: 90px 20px 70px;
+  padding: 90px 20px 60px;
   background: linear-gradient(180deg, var(--suave), var(--fundo));
 }
 .topo h1 {
@@ -32,40 +44,109 @@ h1, h2 { font-weight: normal; }
 }
 .frase {
   max-width: 420px;
+  min-height: 4.5em;
   margin: 0 auto;
   font-style: italic;
+}
+.seta {
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: var(--destaque);
+  animation: pular 1.6s infinite;
+}
+@keyframes pular {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* CONTADOR */
+.contador {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px 16px 50px;
+  text-align: center;
+}
+.contador h2 {
+  font-family: "Great Vibes", cursive;
+  font-size: 2.2rem;
+  color: var(--destaque);
+  margin-bottom: 18px;
+}
+.relogio {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.relogio div {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 4px;
+  box-shadow: 0 4px 14px rgba(224, 122, 143, 0.2);
+}
+.relogio span {
+  display: block;
+  font-size: 1.8rem;
+  color: var(--destaque);
+}
+.relogio small {
+  font-size: 0.8rem;
+  color: var(--texto);
 }
 
 /* GALERIA */
 .galeria {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 30px 16px 60px;
+  padding: 20px 20px 50px;
   text-align: center;
 }
 .galeria h2 {
   font-family: "Great Vibes", cursive;
   font-size: 2.4rem;
   color: var(--destaque);
-  margin-bottom: 20px;
+}
+.dica {
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-bottom: 24px;
 }
 .grade {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;          /* celular: uma embaixo da outra */
+  gap: 30px;
 }
+@media (min-width: 700px) {
+  .grade { grid-template-columns: repeat(3, 1fr); }  /* computador: 3 por linha */
+}
+
 figure {
   position: relative;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--suave);
+  cursor: pointer;
 
-  /* Moldura: borda branca + fio rosa por fora + sombra suave */
-  border: 6px solid #fff;
-  outline: 1px solid var(--destaque);
-  outline-offset: 2px;
-  box-shadow: 0 6px 18px rgba(224, 122, 143, 0.25);
+  /* Moldura: borda branca grossa + fio rosa por fora + sombra */
+  border: 8px solid #fff;
+  outline: 2px solid var(--destaque);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 7px var(--suave), 0 10px 22px rgba(224, 122, 143, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+figure:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 0 0 7px var(--suave), 0 14px 28px rgba(224, 122, 143, 0.45);
+}
+
+/* Linha fina branca por dentro da foto */
+figure::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 9px;
+  pointer-events: none;
 }
 
 /* Foto na horizontal: ocupa a largura toda */
@@ -73,7 +154,6 @@ figure.horizontal {
   grid-column: 1 / -1;
   aspect-ratio: 16 / 9;
 }
-/* Se cortar algo importante, troque "center" por "top" ou "bottom" */
 figure.horizontal img {
   object-position: center center;
 }
@@ -102,6 +182,109 @@ figcaption {
   color: #fff;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
   font-size: 0.95rem;
+}
+
+/* SURPRESA */
+.surpresa {
+  text-align: center;
+  padding: 30px 20px 70px;
+}
+.surpresa h2 {
+  font-family: "Great Vibes", cursive;
+  font-size: 2.4rem;
+  color: var(--destaque);
+  margin-bottom: 16px;
+}
+.surpresa button {
+  background: var(--destaque);
+  color: #fff;
+  border: 0;
+  border-radius: 30px;
+  padding: 14px 30px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(224, 122, 143, 0.4);
+}
+.msg-surpresa {
+  max-width: 420px;
+  margin: 0 auto;
+  font-size: 1.3rem;
+  font-style: italic;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.msg-surpresa.mostrar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* CORAÇÕES */
+.coracao {
+  position: fixed;
+  bottom: -40px;
+  z-index: 50;
+  pointer-events: none;
+  animation: subir linear forwards;
+}
+@keyframes subir {
+  to { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+}
+
+/* FOTO AMPLIADA */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(40, 20, 25, 0.85);
+}
+.lightbox.aberto { display: flex; }
+.caixa {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 14px 14px 20px;
+  text-align: center;
+  background: var(--fundo);
+  border-radius: 16px;
+}
+.caixa img {
+  display: block;
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--suave);
+}
+.caixa h3 {
+  font-family: "Great Vibes", cursive;
+  font-size: 2rem;
+  font-weight: normal;
+  color: var(--destaque);
+  margin-top: 12px;
+}
+.caixa p { margin-top: 6px; }
+.fechar {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--destaque);
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 /* RODAPÉ */
