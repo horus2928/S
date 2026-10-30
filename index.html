@@ -77,7 +77,7 @@
   </div>
 
   <!-- MÚSICA -->
-  <audio id="musica" src="musica/feminina.mp3" loop></audio>
+  <audio id="musica" src="musica/feminina.mp3" preload="auto" loop></audio>
 
   <script>
     /* ====== CONFIGURAÇÕES ====== */
@@ -191,28 +191,40 @@
     });
 
     /* ====== MÚSICA (refrão em loop) ====== */
-    var audio = document.getElementById("musica");
-    function tocar() {
-      if (audio.currentTime < INICIO || audio.currentTime >= FIM) {
-        audio.currentTime = INICIO;
-      }
-      var p = audio.play();
-      if (p) {
-        p.then(removerGatilhos).catch(function () {});
-      }
-    }
-    function removerGatilhos() {
-      ["pointerdown", "keydown"].forEach(function (ev) {
-        document.removeEventListener(ev, tocar);
-      });
-    }
-    audio.addEventListener("timeupdate", function () {
-      if (audio.currentTime >= FIM) { audio.currentTime = INICIO; }
-    });
-    tocar();
-    ["pointerdown", "keydown"].forEach(function (ev) {
-      document.addEventListener(ev, tocar);
-    });
+var audio = document.getElementById("musica");
+var tocando = false;
+
+function tocar() {
+  if (tocando) return;
+  if (audio.readyState >= 1 && (audio.currentTime < INICIO || audio.currentTime >= FIM)) {
+    audio.currentTime = INICIO;
+  }
+  var p = audio.play();
+  if (p) {
+    p.then(function () {
+      tocando = true;
+      removerGatilhos();
+    }).catch(function () {});
+  }
+}
+function removerGatilhos() {
+  ["click", "touchend", "keydown"].forEach(function (ev) {
+    document.removeEventListener(ev, tocar);
+  });
+}
+
+/* garante que começa no refrão assim que o arquivo carrega */
+audio.addEventListener("loadedmetadata", function () {
+  audio.currentTime = INICIO;
+});
+audio.addEventListener("timeupdate", function () {
+  if (audio.currentTime >= FIM) { audio.currentTime = INICIO; }
+});
+
+tocar();
+["click", "touchend", "keydown"].forEach(function (ev) {
+  document.addEventListener(ev, tocar);
+});
   </script>
 
 </body>
