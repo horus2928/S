@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Para Lais Santos Futamata</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- TOPO -->
+  <header class="topo">
+    <h1>Para Lais Santos Futamata</h1>
+    <p class="frase">Cada momento ao seu lado vira uma lembrança que eu quero guardar.</p>
+  </header>
+
+  <!-- GALERIA -->
+  <section id="galeria" class="galeria">
+    <h2>Nossas fotos</h2>
+    <div class="grade">
+
+      <!-- Para trocar a foto: coloque o arquivo na pasta "fotos" e ajuste o nome em src -->
+      <figure class="horizontal">
+        <img src="fotos/foto1.jpg" alt="O dia que nos conhecemos" onerror="this.style.display='none'">
+        <figcaption>O dia que nos conhecemos</figcaption>
+      </figure>
+
+      <figure>
+        <img src="fotos/foto2.jpg" alt="Nosso primeiro encontro" onerror="this.style.display='none'">
+        <figcaption>Nosso primeiro encontro</figcaption>
+      </figure>
+
+      <figure>
+        <img src="fotos/foto3.jpg" alt="Noite no cinema" onerror="this.style.display='none'">
+        <figcaption>Noite no cinema</figcaption>
+      </figure>
+
+      <figure>
+        <img src="fotos/foto4.jpg" alt="Dia no parque" onerror="this.style.display='none'">
+        <figcaption>Dia no parque</figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- RODAPÉ -->
+  <footer class="rodape">
+    <p>Feito com carinho para Lais Santos</p>
+  </footer>
+
+  <!-- MÚSICA: coloque o arquivo na pasta "musica" com o nome feminina.mp3 -->
+  <audio id="musica" src="musica/feminina.mp3" loop></audio>
+
+  <script>
+    var INICIO = 65;   /* 1:05 */
+    var FIM = 110;     /* 1:50 */
+
+    var audio = document.getElementById("musica");
+
+    function tocar() {
+      if (audio.currentTime < INICIO || audio.currentTime >= FIM) {
+        audio.currentTime = INICIO;
+      }
+      var p = audio.play();
+      if (p) {
+        p.then(removerGatilhos).catch(function () {
+          /* O navegador bloqueou: toca no primeiro toque na tela */
+        });
+      }
+    }
+    function removerGatilhos() {
+      ["pointerdown", "keydown"].forEach(function (ev) {
+        document.removeEventListener(ev, tocar);
+      });
+    }
+
+    /* Quando chega no fim do trecho, volta para o início (repete o refrão) */
+    audio.addEventListener("timeupdate", function () {
+      if (audio.currentTime >= FIM) {
+        audio.currentTime = INICIO;
+      }
+    });
+
+    tocar();
+    ["pointerdown", "keydown"].forEach(function (ev) {
+      document.addEventListener(ev, tocar);
+    });
+  </script>
+
+</body>
+</html>
